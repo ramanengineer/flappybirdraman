@@ -3,7 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<title>Flappy Raman 🐦</title>
+<title>Flappy Bird Raman 🐦</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body {
@@ -49,11 +51,11 @@ resize();
 window.addEventListener('resize', resize);
 
 // ── CONSTANTS ────────────────────────────────────────────
-const GRAVITY      = 0.55;
-const FLAP_VY      = -10.5;
-const PIPE_SPEED   = 2.8;
-const PIPE_GAP     = 160;
-const PIPE_INTERVAL= 90;   // frames
+const GRAVITY      = 0.38;
+const FLAP_VY      = -8.2;
+const PIPE_SPEED   = 2.1;
+const PIPE_GAP     = 175;
+const PIPE_INTERVAL= 100;  // frames
 const PIPE_W       = 78;
 const GROUND_H     = 112;
 const BIRD_X       = 90;
@@ -83,10 +85,10 @@ birdImg.onload = () => { birdLoaded = true; };
 // Load pixel font via canvas fallback
 function pixelText(text, x, y, size, color = '#fff', outline = '#000') {
   ctx.save();
-  ctx.font = `900 ${size}px 'Courier New', monospace`;
+  ctx.font = `${size}px 'Press Start 2P', 'Courier New', monospace`;
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
-  ctx.lineWidth = size * 0.18;
+  ctx.lineWidth = size * 0.22;
   ctx.strokeStyle = outline;
   ctx.lineJoin = 'round';
   ctx.strokeText(text, x, y);
@@ -363,7 +365,7 @@ function drawMedal(medal, x, y) {
   // Star
   drawStar(ctx, 0, 0, 5, 12, 6, '#fff8', '#0002');
   // Label
-  ctx.font = '700 9px Courier New';
+  ctx.font = `7px 'Press Start 2P', monospace`;
   ctx.textAlign = 'center';
   ctx.textBaseline = 'bottom';
   ctx.fillStyle = '#333';
@@ -437,10 +439,10 @@ function drawScoreBox(label, value, x, y, w, h) {
   ctx.fillStyle = '#7AB824';
   ctx.fill();
   // Label
-  ctx.font = '700 13px Courier New';
+  ctx.font = `12px 'Press Start 2P', monospace`;
   ctx.textAlign = 'center';
   ctx.fillStyle = '#E8F4D0';
-  ctx.fillText(label, x + w / 2, y + 22);
+  ctx.fillText(label, x + w / 2, y + 24);
   // Value
   pixelText(String(value), x + w / 2, y + h - 24, 34, '#fff', '#2a4a00');
 }
@@ -451,38 +453,38 @@ function drawStartScreen() {
   ctx.fillStyle = 'rgba(0,0,0,0.18)';
   ctx.fillRect(0, 0, GAME_W, GAME_H);
 
-  // Title banner
-  const bx = 40, by = 170, bw = GAME_W - 80, bh = 80;
+  // Title banner - taller for 3 lines
+  const bx = 30, by = 150, bw = GAME_W - 60, bh = 110;
   drawPanel(bx, by, bw, bh);
-  pixelText('FLAPPY', GAME_W / 2, by + 30, 36, '#FFE033', '#7B4A00');
-  pixelText('RAMAN', GAME_W / 2, by + 64, 36, '#FF6B35', '#7B0000');
+  pixelText('FLAPPY', GAME_W / 2, by + 28, 26, '#FFE033', '#7B4A00');
+  pixelText('BIRD', GAME_W / 2, by + 62, 26, '#fff', '#7B4A00');
+  pixelText('RAMAN', GAME_W / 2, by + 96, 26, '#FF6B35', '#7B0000');
 
-  // Bird preview (bobbing)
+  // Bird preview (bobbing) - centered, no duplicate game bird
   const bob = Math.sin(frame * 0.07) * 6;
   if (birdLoaded) {
     ctx.save();
-    ctx.translate(GAME_W / 2, 310 + bob);
-    ctx.drawImage(birdImg, -36, -36, 72, 72);
+    ctx.translate(GAME_W / 2, 330 + bob);
+    ctx.drawImage(birdImg, -40, -40, 80, 80);
     ctx.restore();
   }
 
   // Get Ready text
-  pixelText('GET READY!', GAME_W / 2, 400, 26, '#fff', '#000');
+  pixelText('GET READY!', GAME_W / 2, 420, 18, '#fff', '#000');
 
-  // Tap hint with pulsing arrow
+  // Tap hint with pulsing opacity
   const pulse = 0.75 + 0.25 * Math.sin(frame * 0.12);
   ctx.save();
   ctx.globalAlpha = pulse;
-  // Tap icon
   ctx.font = '32px sans-serif';
   ctx.textAlign = 'center';
-  ctx.fillText('👆', GAME_W / 2, 460);
+  ctx.fillText('👆', GAME_W / 2, 470);
   ctx.restore();
-  pixelText('TAP TO FLAP', GAME_W / 2, 500, 20, '#fff', '#000');
+  pixelText('TAP TO FLAP', GAME_W / 2, 512, 14, '#fff', '#000');
 
   // Best score
   if (bestScore > 0) {
-    pixelText(`BEST: ${bestScore}`, GAME_W / 2, 545, 18, '#FFD700', '#7B4A00');
+    pixelText('BEST: ' + bestScore, GAME_W / 2, 560, 13, '#FFD700', '#7B4A00');
   }
 }
 
@@ -492,7 +494,7 @@ function drawGameOverScreen() {
   ctx.fillRect(0, 0, GAME_W, GAME_H);
 
   // GAME OVER title
-  pixelText('GAME OVER', GAME_W / 2, 220, 46, '#fff', '#000');
+  pixelText('GAME OVER', GAME_W / 2, 220, 30, '#fff', '#000');
 
   // Main panel
   const px = 30, py = 260, pw = GAME_W - 60, ph = 210;
@@ -516,7 +518,7 @@ function drawGameOverScreen() {
     ctx.fillStyle = '#FF4444';
     roundRect(-28, -14, 56, 28, 6);
     ctx.fill();
-    ctx.font = '700 11px Courier New';
+    ctx.font = `8px 'Press Start 2P', monospace`;
     ctx.textAlign = 'center';
     ctx.fillStyle = '#fff';
     ctx.fillText('NEW BEST!', 0, 4);
@@ -553,7 +555,7 @@ function drawButton(label, x, y, w, h, color, shadow) {
   roundRect(x, y, w, h, 10);
   ctx.stroke();
   // Label
-  pixelText(label, x + w / 2, y + h / 2 + 2, 18, '#222', '#ffffff88');
+  pixelText(label, x + w / 2, y + h / 2 + 2, 13, '#222', '#ffffff88');
 }
 
 function lighten(hex, pct) {
@@ -567,7 +569,7 @@ function lighten(hex, pct) {
 
 // ── SCORE DISPLAY ─────────────────────────────────────────
 function drawScore() {
-  pixelText(String(score), GAME_W / 2, 58, 64, '#fff', '#000');
+  pixelText(String(score), GAME_W / 2, 60, 48, '#fff', '#000');
 }
 
 // ── MAIN LOOP ─────────────────────────────────────────────
@@ -664,8 +666,8 @@ function draw() {
     ctx.restore();
   });
 
-  // Bird
-  if (!(state === 'dead' && bird.y > GAME_H)) {
+  // Bird (hide during start screen - preview shown there instead)
+  if (state !== 'start' && !(state === 'dead' && bird.y > GAME_H)) {
     drawBird();
   }
 
